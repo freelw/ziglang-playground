@@ -2,3 +2,5 @@
 **/zig-out/
 01/main
 01/main.o
+ccall/cimport0/main.o
+ccall/cimport0/main

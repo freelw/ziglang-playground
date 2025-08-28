@@ -95,6 +95,11 @@ pub fn build(b: *std.Build) void {
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
 
+    const clean_action = b.addRemoveDirTree(b.path("zig-out"));
+
+    const clean_step = b.step("clean", "Clean the build artifacts");
+    clean_step.dependOn(&clean_action.step);
+
     // Creates a step for unit testing. This only builds the test executable
     // but does not run it.
     const lib_unit_tests = b.addTest(.{

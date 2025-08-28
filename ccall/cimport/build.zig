@@ -42,14 +42,14 @@ pub fn build(b: *std.Build) void {
     // Modules can depend on one another using the `std.Build.Module.addImport` function.
     // This is what allows Zig source code to use `@import("foo")` where 'foo' is not a
     // file path. In this case, we set up `exe_mod` to import `lib_mod`.
-    exe_mod.addImport("ziglang_playground_lib", lib_mod);
+    exe_mod.addImport("cimport_lib", lib_mod);
 
     // Now, we will create a static library based on the module we created above.
     // This creates a `std.Build.Step.Compile`, which is the build step responsible
     // for actually invoking the compiler.
     const lib = b.addLibrary(.{
         .linkage = .static,
-        .name = "ziglang_playground",
+        .name = "cimport",
         .root_module = lib_mod,
     });
 
@@ -61,11 +61,9 @@ pub fn build(b: *std.Build) void {
     // This creates another `std.Build.Step.Compile`, but this one builds an executable
     // rather than a static library.
     const exe = b.addExecutable(.{
-        .name = "ziglang_playground",
+        .name = "cimport",
         .root_module = exe_mod,
     });
-
-    exe.linkLibC();
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
@@ -94,17 +92,6 @@ pub fn build(b: *std.Build) void {
     // This will evaluate the `run` step rather than the default, which is "install".
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
-
-    const clean_action = b.addRemoveDirTree(b.path("zig-out"));
-
-    // 下面代码也可以，不过b.path更简单
-    // const clean_action = b.addRemoveDirTree(.{ .src_path = .{
-    //     .owner = b,
-    //     .sub_path = "zig-out",
-    // } });
-
-    const clean_step = b.step("clean", "Clean the build artifacts");
-    clean_step.dependOn(&clean_action.step);
 
     // Creates a step for unit testing. This only builds the test executable
     // but does not run it.
